@@ -4,10 +4,18 @@
 #include <dirent.h>
 using namespace std;
 
+struct Folder {
+    string name;
+    vector<string> files;
+    vector<Folder> subFolders;
+};
+
 // ------------Các yêu cầu----------------
 
 // 1. Chức năng 1: nhập vào đường dẫn thư mục, in ra màn hình toàn bộ những thư mục con và tập tin trong thư mục đó.
 void listDir(string path) ;
+
+void printSubFolder (Folder folder) ;
 
 // 2. Chức năng 2: nhập vào đường dẫn thư mục, tên tập tin. In ra đường dẫn tuyệt đối của thư mục
 void printPath(string path, string filename) ;
