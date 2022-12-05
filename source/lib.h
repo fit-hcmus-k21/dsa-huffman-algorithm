@@ -17,3 +17,18 @@ void encode(string path, string filename) ;
 
 // 4. Chức năng 4: Giải nén file encode.txt
 void decode(string path, string filename) ;
+
+void handleRequest1() ;
+
+void handleRequest2() ;
+
+void handleRequest3() ;
+
+void handleRequest4() ;
+
+
+
+// -----------các hàm bổ trợ--------------
+void gotoxy(short x, short y) ;
+
+void setColor(int color) ;

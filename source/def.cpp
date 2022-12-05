@@ -42,3 +42,31 @@ void encode(string path, string filename) {
 void decode(string path, string filename) {
   
 }
+
+
+void handleRequest1() {
+    cout << "cau 1" << endl;
+}
+
+void handleRequest2() {
+    cout << "cau 2" << endl;
+}
+
+void handleRequest3() {
+    cout << "cau 3" << endl;
+}
+
+void handleRequest4() {
+    cout << "cau 4" << endl;
+}
+
+
+// -----------các hàm bổ trợ--------------
+void gotoxy(short x, short y) {
+    COORD pos = {x, y};
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
+}
+
+void setColor(int color) {
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
