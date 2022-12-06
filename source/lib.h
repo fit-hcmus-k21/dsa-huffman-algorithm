@@ -10,6 +10,18 @@ struct Folder {
     vector<Folder *> subFolders;
 };
 
+struct Tree {
+    char c;
+    int freq;
+    vector <char> code;
+    Tree *left, *right;
+    Tree (char c, int freq) {
+        this->c = c;
+        this->freq = freq;
+        left = right = NULL;
+    } 
+};
+
 // ------------Các yêu cầu----------------
 
 // 1. Chức năng 1: nhập vào đường dẫn thư mục, in ra màn hình toàn bộ những thư mục con và tập tin trong thư mục đó.
