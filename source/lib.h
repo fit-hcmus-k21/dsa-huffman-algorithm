@@ -18,7 +18,7 @@ void listDir(string path, Folder *head) ;
 void printSubFolder (Folder folder) ;
 
 // 2. Chức năng 2: nhập vào đường dẫn thư mục, tên tập tin. In ra đường dẫn tuyệt đối của thư mục
-void printPath(string path, string filename) ;
+bool printPath(string dir, string filename, string &path) ;
 
 // 3. Chức năng 3: Tạo ra file nén encode.txt
 void encode(string path, string filename) ;

@@ -74,11 +74,65 @@ void handleRequest1() {
 // --------------------------Chức năng 2---------------------------
 
 // 2. Chức năng 2: nhập vào đường dẫn thư mục, tên tập tin. In ra đường dẫn tuyệt đối của thư mục
-void printPath(string path, string filename) {
+bool printPath(string dir, string filename, string &path) {
+    DIR *folder;
+    struct dirent *ent;
+    if ((folder = opendir(dir.c_str())) != NULL) {
+        while ((ent = readdir(folder)) != NULL) {
+            int type = ent->d_type;
+            switch (type ) {
+                case DT_DIR:
+                    if (strcmp(ent->d_name, ".") != 0 && strcmp(ent->d_name, "..") != 0 ) {
+                       if ( printPath(dir + "\\" + ent->d_name, filename, path) == true ) {
+                        closedir(folder);
+                        return true;
+                       }
+                    }
+                    break;
+                case DT_REG:
+                    if (filename == ent->d_name) {
+                        path = dir + "\\" + filename;
+                        closedir(folder);
+                        return true;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        closedir(folder);
 
+    } else {
+        perror("Không thể mở thư mục");
+    }
 }
 
-
+void handleRequest2() {
+    setColor(15);
+    cout << "Nhập đường dẫn thư mục: ";
+    setColor(1);
+    string dir;
+    getline(cin, dir);
+    setColor(15);
+    cout << "Nhập tên tập tin: ";
+    setColor(1);
+    string filename;
+    getline(cin, filename);
+    setColor(3);
+    
+    // xử lý
+    string path ;
+    printPath(dir, filename, path);
+    if (path != "") {
+        setColor(15);
+        cout << "     Path: " ;
+        setColor(3);
+        cout << path << endl;
+    } else {
+        setColor(12);
+        cout << "Không tồn tại " << filename << " trong " << dir << endl;
+    }
+}
 
 
 
@@ -96,10 +150,6 @@ void encode(string path, string filename) {
 // 4. Chức năng 4: Giải nén file encode.txt
 void decode(string path, string filename) {
   
-}
-
-void handleRequest2() {
-    cout << "cau 2" << endl;
 }
 
 void handleRequest3() {
