@@ -7,7 +7,8 @@ void encodeFile (ifstream &fin, ofstream &fout) {
     memset(table, 0, 256 * sizeof(int));
     int sumFreq = createFreqTable(fin, table);
 
-    printTable(table);
+    // in ra bảng tần suất
+    // printTable(table);
     
     // tạo rừng cây
     queue <Tree *> *root = new queue <Tree *>;
@@ -16,17 +17,15 @@ void encodeFile (ifstream &fin, ofstream &fout) {
 
     // hợp nhất các cây thành 1 cây duy nhất
     mergeForest(root);
-    
-    Tree *tree = root->front();
-    cout << "Tổng tần suất: " << sumFreq << endl;
-    cout << "Đầu cây huff : " << tree->freq << endl;
 
-    // duyệt cây để tạo mã hóa
-    // Tree *tree = root->front();
-    // root->pop();
+    // in cây
+    // printTree(root->front());
 
-    // createHuffCodes(tree);
+    // duyệt cây để tạo bảng mã hóa
+    createHuffCodes(root->front());
 
+    // in ra bảng mã hóa
+    printHuffCodesTable(root->front());
 
 
 
@@ -83,7 +82,9 @@ void mergeForest (queue <Tree *> *root) {
 
         // lấy ra hai cây đầu
         Tree *tree1 = root->front();
+        root->pop();
         Tree *tree2 = root->front();
+        root->pop();
 
         // hợp nhất hai cây đầu 
         Tree *mergedTree = new Tree (tree1, tree2);
@@ -116,9 +117,60 @@ void sortForest_Freq (queue <Tree *> *root) {
     }
 }
 
+// in ra cây sau khi merge về tần số và ký tự
+void printTree (Tree *root) {
+    if (root != NULL) {
+        cout << "freq: " << root->freq << endl;
+        if (root->c != '\0') {
+            cout << "char: " << root->c << endl;
+        }
+        printTree(root->left);
+        printTree(root->right);
+
+    }
+}
+
 // tạo bảng mã hóa
 void createHuffCodes (Tree *root) {
- 
+    if (root == NULL) {
+        return;
+    }
+
+    // qua trái thì là 0
+    if (root->left != NULL) {
+        root->left->code = root->code;
+        root->left->code.push_back(0);
+    }
+
+    // qua phải thì là 1
+    if (root->right != NULL) {
+        root->right->code = root->code;
+        root->right->code.push_back(1);
+    }
+
+    // duyệt xuống cây trái và cây phải
+    createHuffCodes(root->left);
+    createHuffCodes(root->right);
+}
+
+// in ra bảng mã hóa
+void printHuffCodesTable (Tree *root) {
+    if (root == NULL) {
+        return;
+    }
+    printHuffCodesTable(root->left);
+
+    if (root->left == NULL && root->right == NULL) {
+        cout << "char : " << root->c << "   freq: " << root->freq << "   ";
+        cout << "code : " ;
+        for (int i = 0; i < root->code.size(); i++) {
+            cout << (int) root->code[i] ;
+        }   
+        cout << endl;
+    }
+
+    printHuffCodesTable(root->right);
+
 }
 
 // chuyển theo bộ mã thành xâu nhị phân, ghép với xâu nhị phân còn dư bước trước, nếu đủ 8bits thì ghi tệp
