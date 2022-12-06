@@ -20,6 +20,16 @@ struct Tree {
         this->freq = freq;
         left = right = NULL;
     } 
+    Tree (Tree *tree1, Tree *tree2) {
+        this->freq = tree1->freq + tree2->freq;
+        if (tree1->freq < tree2->freq) {
+            this->left = tree1;
+            this->right = tree2;
+        } else {
+            this->left = tree2;
+            this->right = tree1;
+        }
+    }
 };
 
 // ------------Các yêu cầu----------------
@@ -54,6 +64,10 @@ void createForest (int *table, queue <Tree*> *root) ;
 void mergeForest (queue <Tree *> *root) ;
 
 void sortForest_Freq (queue <Tree *> *root) ;
+
+int compareFreq (Tree *tree1, Tree *tree2) ;
+
+void createHuffCodes (Tree *root) ;
 
 
 // 4. Chức năng 4: Giải nén file encode.txt

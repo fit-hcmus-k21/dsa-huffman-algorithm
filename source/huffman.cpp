@@ -4,24 +4,35 @@
 void encodeFile (ifstream &fin, ofstream &fout) {
     // tạo bảng tần số xuất hiện của các ký tự trong file input
     int *table = new int[256];
+    memset(table, 0, 256 * sizeof(int));
     int sumFreq = createFreqTable(fin, table);
 
     printTable(table);
-
+    
     // tạo rừng cây
-    queue <Tree *> *root;
+    queue <Tree *> *root = new queue <Tree *>;
     createForest(table, root);
 
+
     // hợp nhất các cây thành 1 cây duy nhất
+    mergeForest(root);
+    
+    Tree *tree = root->front();
+    cout << "Tổng tần suất: " << sumFreq << endl;
+    cout << "Đầu cây huff : " << tree->freq << endl;
 
+    // duyệt cây để tạo mã hóa
+    // Tree *tree = root->front();
+    // root->pop();
 
+    // createHuffCodes(tree);
 
 
 
 
     // giải phóng bộ nhớ
     delete[] table;
-
+    delete root;
 }
 
 // đọc file input và tạo bảng các ký tự xuất hiện trong file
@@ -57,6 +68,8 @@ void createForest (int *table, queue <Tree*> *root) {
     for (int i = 0; i < 256; i++) {
         if (table[i] != 0) {
             Tree *newTree = new Tree (char (i), table[i]);
+
+            // đẩy vào queue
             root->push(newTree);
         }
     }
@@ -81,12 +94,31 @@ void mergeForest (queue <Tree *> *root) {
 
 }
 
-// sắp xếp danh sách queue theo tần số tăng dần
-void sortForest_Freq (queue <Tree *> *root) {
-
+int compareFreq (Tree *tree1, Tree *tree2) {
+    return tree1->freq < tree2->freq;
 }
 
+// sắp xếp danh sách queue theo tần số tăng dần
+void sortForest_Freq (queue <Tree *> *root) {
+    // chuyển queue thành vector
+    vector <Tree *> v;
+    while (!root->empty()) {
+        v.push_back(root->front());
+        root->pop();
+    }
+
+    // sắp xếp vector theo tần số tăng dần
+    sort(v.begin(), v.end(), compareFreq);
+
+    // chuyển vector thành queue
+    for (int i = 0; i < v.size(); i++) {
+        root->push(v[i]);
+    }
+}
 
 // tạo bảng mã hóa
+void createHuffCodes (Tree *root) {
+ 
+}
 
 // chuyển theo bộ mã thành xâu nhị phân, ghép với xâu nhị phân còn dư bước trước, nếu đủ 8bits thì ghi tệp
