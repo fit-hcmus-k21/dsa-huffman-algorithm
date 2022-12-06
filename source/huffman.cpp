@@ -4,7 +4,16 @@
 void encodeFile (ifstream &fin, ofstream &fout) {
     // tạo bảng tần số xuất hiện của các ký tự trong file input
     int *table = new int[256];
-    int sumFreq = readFile(fin, table);
+    int sumFreq = createFreqTable(fin, table);
+
+    printTable(table);
+
+    // tạo rừng cây
+    queue <Tree *> *root;
+    createForest(table, root);
+
+    // hợp nhất các cây thành 1 cây duy nhất
+
 
 
 
@@ -16,27 +25,67 @@ void encodeFile (ifstream &fin, ofstream &fout) {
 }
 
 // đọc file input và tạo bảng các ký tự xuất hiện trong file
-int readFile(ifstream &fin, int *table) {
+int createFreqTable(ifstream &fin, int *table) {
     char c;
     while (fin.read(&c, 1)) {
         table[(int)c]++;
     }
 
-    // đếm số ký tự xuất hiện trong file
+    // đếm tổng số tần suất của các ký tự trong file
     int count = 0;
     for (int i = 0; i < 256; i++) {
         if (table[i] != 0) {
-            count++;
+            count += table[i];
         }
     }
     return count;
 }
 
-// tạo rừng n cây, mỗi cây gồm gốc là tần số và lá là kí tự
+// in ra bảng tần số
+void printTable(int *table) {
+    cout << "Character   :      Freq      " << endl;
+    for (int i = 0; i < 256; i++) {
+        if (table[i] != 0) {
+            cout << (char) i << "         :         " << table[i] << endl;
+        }
+    }
+}
+
+// tạo rừng n cây, mỗi cây gồm dữ liệu tần số, ký tự, node left và right
+void createForest (int *table, queue <Tree*> *root) {
+
+    for (int i = 0; i < 256; i++) {
+        if (table[i] != 0) {
+            Tree *newTree = new Tree (char (i), table[i]);
+            root->push(newTree);
+        }
+    }
+}
 
 // hợp nhất các cây thành 1 cây duy nhất
+void mergeForest (queue <Tree *> *root) {
+    while (root->size() > 1) {
+        // sắp xếp cây theo chiều tần số tăng dần
+        sortForest_Freq(root ) ;
 
-// sắp xếp các cây theo thứ tự tần số tăng dần
+        // lấy ra hai cây đầu
+        Tree *tree1 = root->front();
+        Tree *tree2 = root->front();
+
+        // hợp nhất hai cây đầu 
+        Tree *mergedTree = new Tree (tree1, tree2);
+
+        // đẩy cây đã hợp nhất vào queue
+        root->push(mergedTree);
+    }
+
+}
+
+// sắp xếp danh sách queue theo tần số tăng dần
+void sortForest_Freq (queue <Tree *> *root) {
+
+}
+
 
 // tạo bảng mã hóa
 

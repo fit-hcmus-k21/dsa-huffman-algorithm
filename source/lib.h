@@ -37,13 +37,23 @@ bool printPath(string dir, string filename, string &path) ;
 
 void handleRequest2() ;
 
-void encodeFile (ifstream &fin, ofstream &fout) ;
-
 
 // 3. Chức năng 3: Tạo ra file nén encode.txt
 void encode(string path, string filename) ;
 
 void handleRequest3() ;
+
+void encodeFile (ifstream &fin, ofstream &fout) ;
+
+int createFreqTable (ifstream &fin, int *table) ;
+
+void printTable (int *table) ;
+
+void createForest (int *table, queue <Tree*> *root) ;
+
+void mergeForest (queue <Tree *> *root) ;
+
+void sortForest_Freq (queue <Tree *> *root) ;
 
 
 // 4. Chức năng 4: Giải nén file encode.txt
