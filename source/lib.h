@@ -7,13 +7,13 @@ using namespace std;
 struct Folder {
     string name;
     vector<string> files;
-    vector<Folder> subFolders;
+    vector<Folder *> subFolders;
 };
 
 // ------------Các yêu cầu----------------
 
 // 1. Chức năng 1: nhập vào đường dẫn thư mục, in ra màn hình toàn bộ những thư mục con và tập tin trong thư mục đó.
-void listDir(string path) ;
+void listDir(string path, Folder *head) ;
 
 void printSubFolder (Folder folder) ;
 

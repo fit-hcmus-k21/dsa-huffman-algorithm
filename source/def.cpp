@@ -1,78 +1,101 @@
 #include "lib.h"
 
+
+
+// --------------------------Chức năng 1---------------------------
+
 // 1. Chức năng 1: nhập vào đường dẫn thư mục, in ra màn hình toàn bộ những thư mục con và tập tin trong thư mục đó.
-void listDir(string path) {
+void listDir(string path, Folder *head) {
     DIR *dir;
-    vector <string> listFileName;
-    Folder listFolderName;
-    struct dirent *ent; // ent is a pointer to dirent structure, a shorthand for struct dirent
-    if ((dir = opendir (path.c_str())) != NULL) {
-        while ((ent = readdir (dir)) != NULL) {
+    struct dirent *ent;
+    if ((dir = opendir(path.c_str())) != NULL) {
+        while ((ent = readdir(dir)) != NULL) {
             int type = ent->d_type;
             switch (type) {
-                case DT_REG:    // regular file
-                    listFileName.push_back(ent->d_name);
-                    break;
-                case DT_DIR:    // directory
-                    if (strcmp(ent->d_name, ".") != 0 && strcmp(ent->d_name, "..") != 0) {
-                        Folder folder;
-                        folder.name = ent->d_name;
-                        listFolderName.subFolders.push_back(folder);
+                case DT_DIR: {
+                    if (strcmp(ent->d_name, ".") == 0 || strcmp(ent->d_name, "..") == 0) {
+                        continue;
                     }
+                    Folder *folder = new Folder();
+                    folder->name = ent->d_name;
+                    head->subFolders.push_back(folder);
+                    listDir(path + "/" + ent->d_name, folder);
                     break;
+                }
+                case DT_REG: {
+                    head->files.push_back(ent->d_name);
+                    break;
+                }
                 default:
                     break;
             }
         }
-        closedir (dir);
+        closedir(dir);
     } else {
-        cout << "Cannot open directory" << endl;   
+        setColor(12);
+        perror("Không thể mở thư mục");
     }
-
-    // duyệt qua các thư mục con
-    for (int i = 0; i < listFolderName.subFolders.size(); i++) {
-        string subPath = path + "/" + listFolderName.subFolders[i].name;
-        listDir(subPath);
-    }
-
 }
 
-void printSubFolder (Folder folder) {
-    cout << "----";
-    cout << folder.name << " : " << endl;
-    for (int i = 0; i < folder.subFolders.size(); i++) {
-        printSubFolder(folder.subFolders[i]);
-        // in ra các file
-        for (int j = 0; j < folder.files.size(); j++) {
-            cout << "----------" << folder.files[j] << endl;
+void printDir (Folder *head, int level) {
+    for (int i = 0; i < level; i++) {
+        cout << "    ";
+    }
+    if (head->name != "") {
+        cout << head->name << endl;
+    }
+
+    for (int i = 0; i < head->subFolders.size(); i++) {
+        printDir(head->subFolders[i], level + 1);
+    }
+
+    for (int i = 0; i < head->files.size(); i++) {
+        for (int j = 0; j < level + 1 ; j++) {
+            cout << "    ";
         }
+        cout << head->files[i] << endl;
     }
-    // 
+    
 }
+
+void handleRequest1() {
+    setColor(15);
+    string path;
+    cout << "\nNhập đường dẫn thư mục: ";
+    setColor(1);
+    getline(cin, path);
+    Folder *head = new Folder();
+    listDir(path, head);
+    setColor(3);
+    printDir(head, 0);
+}
+
+
+// --------------------------Chức năng 2---------------------------
 
 // 2. Chức năng 2: nhập vào đường dẫn thư mục, tên tập tin. In ra đường dẫn tuyệt đối của thư mục
 void printPath(string path, string filename) {
 
 }
 
+
+
+
+
+// --------------------------Chức năng 3---------------------------
+
 // 3. Chức năng 3: Tạo ra file nén encode.txt
 void encode(string path, string filename) {
 
 }
 
+
+// --------------------------Chức năng 4---------------------------
+
+
 // 4. Chức năng 4: Giải nén file encode.txt
 void decode(string path, string filename) {
   
-}
-
-
-void handleRequest1() {
-    setColor(2);
-    string path;
-    cout << "\nNhập đường dẫn thư mục: ";
-    getline(cin, path);
-    vector <string> listFileName;
-    Folder listFolderName;
 }
 
 void handleRequest2() {
