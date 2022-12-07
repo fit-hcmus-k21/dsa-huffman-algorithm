@@ -1,14 +1,43 @@
+// #undef _WIN32_WINNT
+// #define _WIN32_WINNT 0x0501 
+// #define WIN32_LEAN_AND_MEAN
+
+
 #include <bits/stdc++.h>
+// #include <algorithm>
+// #include <queue>
 #include <windows.h>
-#include <direct.h>
 #include <dirent.h>
+
+
 using namespace std;
+
+
+// ------------Các yêu cầu----------------
+
 
 struct Folder {
     string name;
     vector<string> files;
     vector<Folder *> subFolders;
 };
+
+// 1. Chức năng 1: nhập vào đường dẫn thư mục, in ra màn hình toàn bộ những thư mục con và tập tin trong thư mục đó.
+void listDir(string path, Folder *head) ;
+
+void printSubFolder (Folder folder) ;
+
+void handleRequest1() ;
+
+
+// 2. Chức năng 2: nhập vào đường dẫn thư mục, tên tập tin. In ra đường dẫn tuyệt đối của thư mục
+bool printPath(string dir, string filename, string &path) ;
+
+void handleRequest2() ;
+
+
+
+// ----------------------------------------Struct, Class cho chức năng 3 và 4----------------------------------------------
 
 struct Tree {
     char c;
@@ -33,56 +62,87 @@ struct Tree {
     }
 };
 
-// ------------Các yêu cầu----------------
 
-// 1. Chức năng 1: nhập vào đường dẫn thư mục, in ra màn hình toàn bộ những thư mục con và tập tin trong thư mục đó.
-void listDir(string path, Folder *head) ;
+class HuffmanCoding {
 
-void printSubFolder (Folder folder) ;
+    public:
 
-void handleRequest1() ;
+        HuffmanCoding()  ;
+        ~HuffmanCoding() ;
 
+        // -------------các hàm chức năng---------------
 
-// 2. Chức năng 2: nhập vào đường dẫn thư mục, tên tập tin. In ra đường dẫn tuyệt đối của thư mục
-bool printPath(string dir, string filename, string &path) ;
+        // khởi tạo đường dẫn và tên file
+        void init(string originalPath);
+        // mã hóa file
+        void encode() ;
+        // giải mã file
+        void decode() ;
 
-void handleRequest2() ;
+        // ------------các hàm xử lý-----------------
+        
+        // 3. Chức năng 3: Tạo ra file nén encode.txt
+        void handleRequest3() ;
 
-
-// 3. Chức năng 3: Tạo ra file nén encode.txt
-void encode(string path, string filename) ;
-
-void handleRequest3() ;
-
-void encodeFile (ifstream &fin, ofstream &fout) ;
-
-int createFreqTable (ifstream &fin, int *table) ;
-
-void printTable (int *table) ;
-
-void createForest (int *table, queue <Tree*> *root) ;
-
-void mergeForest (queue <Tree *> *root) ;
-
-void sortForest_Freq (queue <Tree *> *root) ;
-
-int compareFreq (Tree *tree1, Tree *tree2) ;
-
-void createHuffCodes (Tree *root) ;
-
-void printTree (Tree *root) ;
-
-void printHuffCodesTable (Tree *root) ;
+        // 4. Chức năng 4: Giải nén file encode.txt
+        void handleRequest4() ;
 
 
-// 4. Chức năng 4: Giải nén file encode.txt
-void decode(string path, string filename) ;
+        // ------------các hàm bổ trợ-----------------
 
-void handleRequest4() ;
+        // hàm tạo bảng tần số
+        void createFreqTable() ;
 
+        // hàm in bảng tần số (debug)
+        void printTable() ;
+
+        // hàm tạo rừng các cây huffman
+        void createForest() ;
+
+        // hàm sắp xếp lại cây trong rừng theo tần số xuất hiện từ thấp đến cao 
+        void sortForest_Freq() ;
+
+        // hàm hợp mỗi hai cây thành 1 cho đến khi chỉ còn 1 cây
+        void mergeForest() ;
+
+        // hàm in cây huffman sau khi hợp nhất (debug)
+        void printTree(Tree *root) ;
+
+        // hàm tạo bảng mã huffman
+        void createCodesTable(Tree *root) ;
+
+        // hàm in bảng mã hóa (debug)
+        void printCodesTable(Tree *root) ;
+
+
+    private:
+        // tên file và đường dẫn
+        string path;
+        string filename;
+        string encodeFilename;
+        string decodeFilename;
+
+        // các file stream
+        ifstream fin;
+        ofstream fout;
+
+        // biến đếm tổng số tần số các ký tự và bảng tần số
+        int count;
+        int freqTable[257];
+
+
+        // rừng các cây huffman
+        queue <Tree *> *forest;
+        Tree *root;
+
+};
 
 
 // -----------các hàm bổ trợ--------------
 void gotoxy(short x, short y) ;
 
 void setColor(int color) ;
+
+
+// hàm hỗ trợ sắp xếp theo tần số trong vector
+bool compareFreq(Tree *tree1, Tree *tree2) ;

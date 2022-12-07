@@ -134,72 +134,6 @@ void handleRequest2() {
     }
 }
 
-
-
-// --------------------------Chức năng 3---------------------------
-
-// 3. Chức năng 3: Tạo ra file nén encode.txt
-void encode(string path) {
-    ifstream fin(path, ios::binary);
-    if (fin.fail()) {
-        cout << "Không thể mở file" << endl;
-        return;
-    }
-    
-    // tách đường dẫn thành tên file và đường dẫn
-    string filename = path.substr(path.find_last_of("\\") + 1);
-    string dir = path.substr(0, path.find_last_of("\\"));
-
-    cout << "Tên file: " << filename << endl;
-    cout << "Đường dẫn: " << dir << endl;
-
-    // ghép tên fout = dir + encode.txt
-    string fileOut = dir + "\\encode.txt";
-
-    ofstream fout(fileOut, ios::binary);
-    if (fout.fail()) {
-        cout << "Không thể tạo file" << endl;
-        return;
-    }
-
-    // xử lý mã hóa file
-    encodeFile(fin, fout);
-
-    // đóng file
-    fin.close();
-    fout.close();
-}
-
-
-void handleRequest3() {
-    setColor(15);
-    cout << "Nhập đường dẫn file cần nén: ";
-    setColor(1);
-    string path;
-    getline(cin, path);
-    clock_t start, end;
-    setColor(3);
-    start = clock();
-    encode(path);
-    end = clock();
-    cout << "Đã nén file thành công !" << endl;
-    cout << "Thời gian nén: " << (double)1000 * (end - start) / CLOCKS_PER_SEC << "ms" << endl;
-}
-
-
-// --------------------------Chức năng 4---------------------------
-
-
-// 4. Chức năng 4: Giải nén file encode.txt
-void decode(string path, string filename) {
-  
-}
-
-void handleRequest4() {
-    cout << "cau 4" << endl;
-}
-
-
 // -----------các hàm bổ trợ--------------
 void gotoxy(short x, short y) {
     COORD pos = {x, y};
@@ -208,4 +142,8 @@ void gotoxy(short x, short y) {
 
 void setColor(int color) {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
+
+bool compareFreq (Tree *tree1, Tree *tree2) {
+    return (tree1->freq < tree2->freq);
 }

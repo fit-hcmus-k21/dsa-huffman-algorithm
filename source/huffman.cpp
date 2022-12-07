@@ -1,111 +1,110 @@
 #include "lib.h"
 
-// --------------------------Chức năng 3---------------------------
-void encodeFile (ifstream &fin, ofstream &fout) {
-    // tạo bảng tần số xuất hiện của các ký tự trong file input
-    int *table = new int[256];
-    memset(table, 0, 256 * sizeof(int));
-    int sumFreq = createFreqTable(fin, table);
+// --------------------------định nghĩa các hàm class---------------------------
 
-    // in ra bảng tần suất
-    // printTable(table);
-    
-    // tạo rừng cây
-    queue <Tree *> *root = new queue <Tree *>;
-    createForest(table, root);
-
-
-    // hợp nhất các cây thành 1 cây duy nhất
-    mergeForest(root);
-
-    // in cây
-    // printTree(root->front());
-
-    // duyệt cây để tạo bảng mã hóa
-    createHuffCodes(root->front());
-
-    // in ra bảng mã hóa
-    printHuffCodesTable(root->front());
-
-
-
-    // giải phóng bộ nhớ
-    delete[] table;
-    delete root;
+HuffmanCoding::HuffmanCoding() {
+    // khởi tạo các biến
+    root = NULL;
+    forest = new queue <Tree *>;
+    memset(freqTable, 0, sizeof(freqTable));
 }
 
-// đọc file input và tạo bảng các ký tự xuất hiện trong file
-int createFreqTable(ifstream &fin, int *table) {
+HuffmanCoding::~HuffmanCoding() {
+    // đóng file input
+    fin.close();
+    fout.close();
+
+    // giải phóng bộ nhớ
+    delete root;
+    
+
+}
+
+// khởi tạo đường dẫn và tên file từ đường dẫn nhập vào, mở file input
+void HuffmanCoding::init(string originalPath) {
+    this->path = originalPath.substr(0, originalPath.find_last_of("\\"));
+    this->filename = originalPath.substr(originalPath.find_last_of("\\") + 1);
+    this->encodeFilename = path + "\\encode.txt";
+    this->decodeFilename = path + "\\decode.txt";
+
+    // mở file input
+    fin.open(originalPath, ios::binary);
+    if (fin.fail()) {
+        cout << "Không thể mở file" << endl;
+        return;
+    }
+}
+
+
+// tạo bảng các ký tự xuất hiện trong file
+void HuffmanCoding::createFreqTable() {
     char c;
     while (fin.read(&c, 1)) {
-        table[(int)c]++;
+        unsigned char b = c;
+        freqTable[(int) b]++;
     }
+    freqTable[256] = 1; // ký tự EOF
 
-    // đếm tổng số tần suất của các ký tự trong file
-    int count = 0;
+    // đếm tổng số tần suất của các ký tự trong file (không tính EOF)
+    count = 0;
     for (int i = 0; i < 256; i++) {
-        if (table[i] != 0) {
-            count += table[i];
+        if (freqTable[i] != 0) {
+            count += freqTable[i];
         }
     }
-    return count;
 }
 
 // in ra bảng tần số
-void printTable(int *table) {
-    cout << "Character   :      Freq      " << endl;
-    for (int i = 0; i < 256; i++) {
-        if (table[i] != 0) {
-            cout << (char) i << "         :         " << table[i] << endl;
+void HuffmanCoding::printTable() {
+    cout << "Character   :      Freq    " << endl;
+    for (int i = 0; i < 257; i++) {
+        if (freqTable[i] != 0) {
+            cout << (char) i << " :  " << freqTable[i] << endl;
         }
     }
 }
 
-// tạo rừng n cây, mỗi cây gồm dữ liệu tần số, ký tự, node left và right
-void createForest (int *table, queue <Tree*> *root) {
+// tạo rừng n cây, mỗi cây gồm dữ liệu tần số, ký tự, node left và right = NULL
+void HuffmanCoding :: createForest () {
 
-    for (int i = 0; i < 256; i++) {
-        if (table[i] != 0) {
-            Tree *newTree = new Tree (char (i), table[i]);
+    for (int i = 0; i < 257; i++) {
+        if (freqTable[i] != 0) {
+            Tree *newTree = new Tree (char (i), freqTable[i]);
 
             // đẩy vào queue
-            root->push(newTree);
+            forest->push(newTree);
         }
     }
 }
 
 // hợp nhất các cây thành 1 cây duy nhất
-void mergeForest (queue <Tree *> *root) {
-    while (root->size() > 1) {
+void HuffmanCoding::mergeForest () {
+    while (forest->size() > 1) {
         // sắp xếp cây theo chiều tần số tăng dần
-        sortForest_Freq(root ) ;
+        sortForest_Freq( ) ;
 
         // lấy ra hai cây đầu
-        Tree *tree1 = root->front();
-        root->pop();
-        Tree *tree2 = root->front();
-        root->pop();
+        Tree *tree1 = forest->front();
+        forest->pop();
+        Tree *tree2 = forest->front();
+        forest->pop();
 
         // hợp nhất hai cây đầu 
         Tree *mergedTree = new Tree (tree1, tree2);
 
         // đẩy cây đã hợp nhất vào queue
-        root->push(mergedTree);
+        forest->push(mergedTree);
     }
 
 }
 
-int compareFreq (Tree *tree1, Tree *tree2) {
-    return tree1->freq < tree2->freq;
-}
-
 // sắp xếp danh sách queue theo tần số tăng dần
-void sortForest_Freq (queue <Tree *> *root) {
+void HuffmanCoding::sortForest_Freq () {
     // chuyển queue thành vector
     vector <Tree *> v;
-    while (!root->empty()) {
-        v.push_back(root->front());
-        root->pop();
+    while (!forest->empty()) {
+        v.push_back(forest->front());
+        forest->pop();
     }
 
     // sắp xếp vector theo tần số tăng dần
@@ -113,12 +112,12 @@ void sortForest_Freq (queue <Tree *> *root) {
 
     // chuyển vector thành queue
     for (int i = 0; i < v.size(); i++) {
-        root->push(v[i]);
+        forest->push(v[i]);
     }
 }
 
 // in ra cây sau khi merge về tần số và ký tự
-void printTree (Tree *root) {
+void HuffmanCoding::printTree (Tree *root) {
     if (root != NULL) {
         cout << "freq: " << root->freq << endl;
         if (root->c != '\0') {
@@ -131,7 +130,7 @@ void printTree (Tree *root) {
 }
 
 // tạo bảng mã hóa
-void createHuffCodes (Tree *root) {
+void HuffmanCoding :: createCodesTable (Tree *root) {
     if (root == NULL) {
         return;
     }
@@ -149,16 +148,16 @@ void createHuffCodes (Tree *root) {
     }
 
     // duyệt xuống cây trái và cây phải
-    createHuffCodes(root->left);
-    createHuffCodes(root->right);
+    createCodesTable(root->left);
+    createCodesTable(root->right);
 }
 
 // in ra bảng mã hóa
-void printHuffCodesTable (Tree *root) {
+void HuffmanCoding :: printCodesTable (Tree *root) {
     if (root == NULL) {
         return;
     }
-    printHuffCodesTable(root->left);
+    printCodesTable(root->left);
 
     if (root->left == NULL && root->right == NULL) {
         cout << "char : " << root->c << "   freq: " << root->freq << "   ";
@@ -169,8 +168,104 @@ void printHuffCodesTable (Tree *root) {
         cout << endl;
     }
 
-    printHuffCodesTable(root->right);
+    printCodesTable(root->right);
 
 }
 
-// chuyển theo bộ mã thành xâu nhị phân, ghép với xâu nhị phân còn dư bước trước, nếu đủ 8bits thì ghi tệp
+
+
+// --------------------------Chức năng 3---------------------------
+
+void HuffmanCoding::handleRequest3 () {
+    setColor(15);
+    cout << "Nhập đường dẫn file cần nén: ";
+    setColor(1);
+    string path;
+    getline(cin, path);
+
+    clock_t start, end;
+    start = clock();
+
+    // tách tên file và path
+    init(path);
+
+    // mở file output
+    fout.open(encodeFilename, ios::binary);
+    if (fout.fail()) {
+        cout << "Không thể tạo file" << endl;
+        return;
+    }
+
+    // mã hóa file
+    encode();
+
+    end = clock();
+    setColor(3);
+    cout << "Đã nén file thành công !" << endl;
+    cout << "Thời gian nén: " << (double)1000 * (end - start) / CLOCKS_PER_SEC << "ms" << endl;
+
+}
+
+
+void HuffmanCoding :: encode () {
+    // tạo bảng tần số xuất hiện của các ký tự trong file input
+    createFreqTable();
+
+    // in ra bảng tần suất
+    // printTable();
+    
+    // tạo rừng cây
+    createForest();
+
+
+    // hợp nhất các cây thành 1 cây duy nhất
+    mergeForest();
+
+    // in cây
+    root = forest->front();
+    // printTree(root);
+
+    // duyệt cây để tạo bảng mã hóa
+    createCodesTable(root);
+
+    // in ra bảng mã hóa
+    // printCodesTable(root);
+
+    /* đọc từng byte 
+    chuyển theo bộ mã thành xâu nhị phân, ghép với xâu nhị phân còn dư bước trước,
+    nếu đủ 8bits thì ghi tệp
+    */
+
+}
+
+// ---------------------------------Chức năng 4---------------------------
+void HuffmanCoding::handleRequest4 () {
+    setColor(15);
+    cout << "Nhập đường dẫn file cần giải nén: ";
+    setColor(1);
+    string path;
+    getline(cin, path);
+    clock_t start, end;
+    start = clock();
+
+    // mở file output
+    fout.open(decodeFilename, ios::binary);
+    if (fout.fail()) {
+        cout << "Không thể tạo file" << endl;
+        return;
+    }
+    // giải mã file
+    decode();
+
+    end = clock();
+
+    setColor(3);
+    cout << "Đã giải nén file thành công !" << endl;
+    cout << "Thời gian giải nén: " << (double)1000 * (end - start) / CLOCKS_PER_SEC << "ms" << endl;
+
+}
+
+void HuffmanCoding::decode() {
+
+}
+
