@@ -143,3 +143,7 @@ void gotoxy(short x, short y) {
 void setColor(int color) {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
+
+bool compareFreq (Tree *tree1, Tree *tree2) {
+    return (tree1->freq < tree2->freq);
+}

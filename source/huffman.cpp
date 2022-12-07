@@ -3,7 +3,6 @@
 // --------------------------định nghĩa các hàm class---------------------------
 
 HuffmanCoding::HuffmanCoding() {
-    cout << "Huffman Coding structure\n";
     // khởi tạo các biến
     root = NULL;
     forest = new queue <Tree *>;
@@ -17,7 +16,7 @@ HuffmanCoding::~HuffmanCoding() {
 
     // giải phóng bộ nhớ
     delete root;
-
+    
 
 }
 
@@ -58,7 +57,7 @@ void HuffmanCoding::createFreqTable() {
 // in ra bảng tần số
 void HuffmanCoding::printTable() {
     cout << "Character   :      Freq    " << endl;
-    for (int i = 0; i < 256; i++) {
+    for (int i = 0; i < 257; i++) {
         if (freqTable[i] != 0) {
             cout << (char) i << " :  " << freqTable[i] << endl;
         }
@@ -68,7 +67,7 @@ void HuffmanCoding::printTable() {
 // tạo rừng n cây, mỗi cây gồm dữ liệu tần số, ký tự, node left và right = NULL
 void HuffmanCoding :: createForest () {
 
-    for (int i = 0; i < 256; i++) {
+    for (int i = 0; i < 257; i++) {
         if (freqTable[i] != 0) {
             Tree *newTree = new Tree (char (i), freqTable[i]);
 
@@ -97,10 +96,6 @@ void HuffmanCoding::mergeForest () {
         forest->push(mergedTree);
     }
 
-}
-
-int HuffmanCoding::compareFreq (Tree *tree1, Tree *tree2) {
-    return tree1->freq < tree2->freq;
 }
 
 // sắp xếp danh sách queue theo tần số tăng dần
@@ -217,7 +212,7 @@ void HuffmanCoding :: encode () {
     createFreqTable();
 
     // in ra bảng tần suất
-    printTable();
+    // printTable();
     
     // tạo rừng cây
     createForest();
@@ -228,13 +223,13 @@ void HuffmanCoding :: encode () {
 
     // in cây
     root = forest->front();
-    printTree(root);
+    // printTree(root);
 
     // duyệt cây để tạo bảng mã hóa
     createCodesTable(root);
 
     // in ra bảng mã hóa
-    printCodesTable(root);
+    // printCodesTable(root);
 
     /* đọc từng byte 
     chuyển theo bộ mã thành xâu nhị phân, ghép với xâu nhị phân còn dư bước trước,

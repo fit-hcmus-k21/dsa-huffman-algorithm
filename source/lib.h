@@ -1,7 +1,15 @@
+// #undef _WIN32_WINNT
+// #define _WIN32_WINNT 0x0501 
+// #define WIN32_LEAN_AND_MEAN
+
+
 #include <bits/stdc++.h>
+// #include <algorithm>
+// #include <queue>
 #include <windows.h>
-#include <direct.h>
 #include <dirent.h>
+
+
 using namespace std;
 
 
@@ -56,29 +64,10 @@ struct Tree {
 
 
 class HuffmanCoding {
-    private:
-        // tên file và đường dẫn
-        string path;
-        string filename;
-        string encodeFilename;
-        string decodeFilename;
-
-        // các file stream
-        ifstream fin;
-        ofstream fout;
-
-        // biến đếm tổng số tần số các ký tự và bảng tần số
-        int count;
-        int freqTable[257];
-
-
-        // rừng các cây huffman
-        queue <Tree *> *forest;
-        Tree *root;
 
     public:
 
-        HuffmanCoding() ;
+        HuffmanCoding()  ;
         ~HuffmanCoding() ;
 
         // -------------các hàm chức năng---------------
@@ -113,9 +102,6 @@ class HuffmanCoding {
         // hàm sắp xếp lại cây trong rừng theo tần số xuất hiện từ thấp đến cao 
         void sortForest_Freq() ;
 
-        // hàm hỗ trợ sắp xếp theo tần số trong vector
-        int compareFreq(Tree *tree1, Tree *tree2) ;
-
         // hàm hợp mỗi hai cây thành 1 cho đến khi chỉ còn 1 cây
         void mergeForest() ;
 
@@ -128,6 +114,27 @@ class HuffmanCoding {
         // hàm in bảng mã hóa (debug)
         void printCodesTable(Tree *root) ;
 
+
+    private:
+        // tên file và đường dẫn
+        string path;
+        string filename;
+        string encodeFilename;
+        string decodeFilename;
+
+        // các file stream
+        ifstream fin;
+        ofstream fout;
+
+        // biến đếm tổng số tần số các ký tự và bảng tần số
+        int count;
+        int freqTable[257];
+
+
+        // rừng các cây huffman
+        queue <Tree *> *forest;
+        Tree *root;
+
 };
 
 
@@ -135,3 +142,7 @@ class HuffmanCoding {
 void gotoxy(short x, short y) ;
 
 void setColor(int color) ;
+
+
+// hàm hỗ trợ sắp xếp theo tần số trong vector
+bool compareFreq(Tree *tree1, Tree *tree2) ;
