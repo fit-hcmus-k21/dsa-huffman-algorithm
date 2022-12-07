@@ -16,5 +16,8 @@ int main() {
     cout << (unsigned int) b << endl;
     cout << (int) e << endl;
 
+
+    cout << "unsigned char 256: " << (unsigned char) 256 << endl;
+
     return 0;
 }

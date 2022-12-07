@@ -40,11 +40,14 @@ void handleRequest2() ;
 // ----------------------------------------Struct, Class cho chức năng 3 và 4----------------------------------------------
 
 struct Tree {
-    char c;
+    unsigned char c;
     int freq;
-    vector <char> code;
+    vector <unsigned char> code;
     Tree *left, *right;
-    Tree (char c, int freq) {
+
+    Tree();
+
+    Tree (unsigned char c, int freq) {
         this->c = c;
         this->freq = freq;
         left = right = NULL;
@@ -60,6 +63,11 @@ struct Tree {
             this->right = tree1;
         }
     }
+};
+
+struct EncodeTable {
+    unsigned char c ;
+    vector <unsigned char> code;
 };
 
 
@@ -114,6 +122,8 @@ class HuffmanCoding {
         // hàm in bảng mã hóa (debug)
         void printCodesTable(Tree *root) ;
 
+        void convertEncodeTable(Tree *root) ;
+
 
     private:
         // tên file và đường dẫn
@@ -128,12 +138,18 @@ class HuffmanCoding {
 
         // biến đếm tổng số tần số các ký tự và bảng tần số
         int count;
-        int freqTable[257];
+        int freqTable[256];
 
 
         // rừng các cây huffman
-        queue <Tree *> *forest;
-        Tree *root;
+        queue <Tree *> *forest; 
+
+        // cây huffman sau khi hợp nhất
+        Tree *root; 
+
+        // tạo bảng mã hóa chỉ gồm ký tự và mã hóa của ký tự dạng mảng để dễ truy cập
+        EncodeTable encodeTable[256];
+
 
 };
 
