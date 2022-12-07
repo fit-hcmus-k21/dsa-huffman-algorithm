@@ -42,7 +42,7 @@ void handleRequest2() ;
 struct Tree {
     unsigned char c;
     int freq;
-    vector <unsigned char> code;
+    queue <unsigned char> code;
     Tree *left, *right;
 
     Tree();
@@ -67,7 +67,7 @@ struct Tree {
 
 struct EncodeTable {
     unsigned char c ;
-    vector <unsigned char> code;
+    queue <unsigned char> code;
 };
 
 
@@ -136,8 +136,8 @@ class HuffmanCoding {
         ifstream fin;
         ofstream fout;
 
-        // biến đếm tổng số tần số các ký tự và bảng tần số
-        int count;
+        // biến đếm tổng số Bytes file input và bảng tần số
+        int countBytes;
         int freqTable[256];
 
 
@@ -149,6 +149,15 @@ class HuffmanCoding {
 
         // tạo bảng mã hóa chỉ gồm ký tự và mã hóa của ký tự dạng mảng để dễ truy cập
         EncodeTable encodeTable[256];
+
+        // bộ đệm ghi file
+        unsigned char buffer;
+        
+        // biến đếm số bit trong bộ đệm
+        int numBitFilled;
+
+        // độ dài của kí tự mã hóa
+        int codeLen;
 
 
 };

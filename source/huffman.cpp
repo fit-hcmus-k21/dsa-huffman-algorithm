@@ -7,10 +7,11 @@
 void HuffmanCoding::handleRequest3 () {
     setColor(15);
     cout << "Nhập đường dẫn file cần nén: ";
-    setColor(1);
+    setColor(6);
     string path;
     getline(cin, path);
 
+    setColor(3);
     clock_t start, end;
     start = clock();
 
@@ -63,30 +64,105 @@ void HuffmanCoding :: encode () {
     convertEncodeTable(root);
 
     // in ra bảng mã hóa
-    // for (int i = 0; i < 256; i++) {
-    //     if (encodeTable[i].code.size() != 0) {
-    //         cout << i << " :" ;
-    //         for (auto x : encodeTable[i].code) {
-    //             cout << (int)x;
-    //         }
-    //         cout << endl;
-    //     }
-    // }
+    for (int i = 0; i < 256; i++) {
+        if (encodeTable[i].code.size() != 0) {
+            cout << i << " :" ;
+            int n = encodeTable[i].code.size();
+            for (int j = 0; j < n; j++) {
+                unsigned char code = encodeTable[i].code.front();
+                cout << (int) code;
+                encodeTable[i].code.pop();
+                encodeTable[i].code.push(code);
+            }
+            cout << endl;
+        }
+    }
 
     /* đọc từng byte 
     chuyển theo bộ mã thành xâu nhị phân, ghép với xâu nhị phân còn dư bước trước,
     nếu đủ 8bits thì ghi tệp
     */
+    buffer = 0;
+    numBitFilled = 0;
+    codeLen = 0;
 
+    // đếm số byte mã hóa
+    int numByteEncoded = 0;
+
+    char ch;
+    // di chuyển về đầu tệp
+    fin.clear();
+    fin.seekg(0);
+
+    while (fin.get(ch)) {
+        // cout << "ki tu da doc: " << ch << endl;
+        unsigned char c = ch;
+        codeLen = encodeTable[c].code.size();
+
+        while (codeLen > 0) {
+            
+            if (numBitFilled == 8) {
+                fout.put(buffer);
+                numBitFilled = 0;
+                buffer = 0;
+                numByteEncoded++;
+            }
+            
+            unsigned char code = encodeTable[c].code.front();
+            encodeTable[c].code.pop();
+            encodeTable[c].code.push(code);
+            buffer = (buffer << 1) | code;
+            codeLen--;
+            numBitFilled++;
+            
+        }
+
+    }
+
+    // ghi ký tự EOF
+    codeLen = encodeTable[26].code.size();
+    while (codeLen > 0) {
+        if (numBitFilled == 8) {
+            fout.put(buffer);
+            numBitFilled = 0;
+            buffer = 0;
+            numByteEncoded++;
+        } 
+
+        unsigned char code = encodeTable[26].code.front();
+        encodeTable[26].code.pop();
+        encodeTable[26].code.push(code);
+        buffer = (buffer << 1) | code;
+        codeLen --;
+        numBitFilled ++;
+        
+    }
+
+    // nếu còn trong buffer chưa ghi file
+    if (numBitFilled > 0) {
+        while (numBitFilled != 8) {
+            buffer = (buffer << 1) | 0;
+            numBitFilled ++;
+        }
+        fout.put(buffer);
+        numBitFilled = 0;
+        buffer = 0;
+        numByteEncoded++;
+    }
+    cout << "Số byte trước khi mã hóa: " << countBytes << endl;
+    cout << "Số byte sau khi mã hóa: " << numByteEncoded << endl;
+    // printf("Tỷ lệ nén: %.2f%%\n", (float)numByteEncoded / countBytes * 100);
 }
 
 // ---------------------------------Chức năng 4---------------------------
 void HuffmanCoding::handleRequest4 () {
     setColor(15);
     cout << "Nhập đường dẫn file cần giải nén: ";
-    setColor(1);
+    setColor(6);
     string path;
     getline(cin, path);
+
+    setColor(1);
     clock_t start, end;
     start = clock();
 
@@ -156,12 +232,15 @@ void HuffmanCoding::createFreqTable() {
     }
 
     // đếm tổng số tần suất của các ký tự trong file (không tính EOF)
-    count = 0;
+    countBytes = 0;
     for (int i = 0; i < 256; i++) {
         if (freqTable[i] != 0) {
-            count += freqTable[i];
+            countBytes += freqTable[i];
         }
     }
+
+    freqTable[26] ++; // vị trí ký tự EOF
+
 }
 
 // in ra bảng tần số
@@ -249,13 +328,13 @@ void HuffmanCoding :: createCodesTable (Tree *root) {
     // qua trái thì là 0
     if (root->left != NULL) {
         root->left->code = root->code;
-        root->left->code.push_back(0);
+        root->left->code.push(0);
     }
 
     // qua phải thì là 1
     if (root->right != NULL) {
         root->right->code = root->code;
-        root->right->code.push_back(1);
+        root->right->code.push(1);
     }
 
     // duyệt xuống cây trái và cây phải
@@ -273,9 +352,13 @@ void HuffmanCoding :: printCodesTable (Tree *root) {
     if (root->left == NULL && root->right == NULL) {
         cout << "freq: " << root->freq << "   ";
         cout << "code : " ;
-        for (int i = 0; i < root->code.size(); i++) {
-            cout << (int) root->code[i] ;
-        }   
+        int n = root->code.size();
+        for (int i = 0; i < n; i++ ) {
+            unsigned char c = root->code.front();
+            cout << c;
+            root->code.pop();
+            root->code.push(c);
+        }
         cout << endl;
     }
 
