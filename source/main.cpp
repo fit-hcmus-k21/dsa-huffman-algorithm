@@ -55,6 +55,9 @@ int main() {
         cout << "|";
     }
 
+    // khởi tạo biến kiểu huff
+    HuffmanCoding huff;
+
     //------------------------- Xử lý chức năng -------------------------
     int cont = 1;
     string choose;
@@ -76,11 +79,11 @@ int main() {
                 break;
             }
             case 3: {
-                handleRequest3();
+                huff.handleRequest3();
                 break;
             }
             case 4: {
-                handleRequest4();
+                huff.handleRequest4();
                 break;
             }
             case 5: {
