@@ -62,7 +62,7 @@ void handleRequest1() {
     setColor(15);
     string path;
     cout << "\nNhập đường dẫn thư mục: ";
-    setColor(1);
+    setColor(6);
     getline(cin, path);
     Folder *head = new Folder();
     listDir(path, head);
@@ -110,12 +110,12 @@ bool printPath(string dir, string filename, string &path) {
 void handleRequest2() {
     setColor(15);
     cout << "Nhập đường dẫn thư mục: ";
-    setColor(1);
+    setColor(6);
     string dir;
     getline(cin, dir);
     setColor(15);
     cout << "Nhập tên tập tin: ";
-    setColor(1);
+    setColor(6);
     string filename;
     getline(cin, filename);
     setColor(3);
