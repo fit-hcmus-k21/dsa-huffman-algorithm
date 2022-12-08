@@ -33,6 +33,10 @@ void HuffmanCoding::handleRequest3 () {
     cout << "Đã nén file thành công !" << endl;
     cout << "Thời gian nén: " << (double)1000 * (end - start) / CLOCKS_PER_SEC << "ms" << endl;
 
+    // đóng file
+    fin.close();
+    fout.close();
+
 }
 
 
@@ -64,19 +68,19 @@ void HuffmanCoding :: encode () {
     convertEncodeTable(root);
 
     // in ra bảng mã hóa
-    for (int i = 0; i < 256; i++) {
-        if (encodeTable[i].code.size() != 0) {
-            cout << i << " :" ;
-            int n = encodeTable[i].code.size();
-            for (int j = 0; j < n; j++) {
-                unsigned char code = encodeTable[i].code.front();
-                cout << (int) code;
-                encodeTable[i].code.pop();
-                encodeTable[i].code.push(code);
-            }
-            cout << endl;
-        }
-    }
+    // for (int i = 0; i < 256; i++) {
+    //     if (encodeTable[i].code.size() != 0) {
+    //         cout << i << " :" ;
+    //         int n = encodeTable[i].code.size();
+    //         for (int j = 0; j < n; j++) {
+    //             unsigned char code = encodeTable[i].code.front();
+    //             cout << (int) code;
+    //             encodeTable[i].code.pop();
+    //             encodeTable[i].code.push(code);
+    //         }
+    //         cout << endl;
+    //     }
+    // }
 
     /* đọc từng byte 
     chuyển theo bộ mã thành xâu nhị phân, ghép với xâu nhị phân còn dư bước trước,
@@ -162,6 +166,9 @@ void HuffmanCoding::handleRequest4 () {
     string path;
     getline(cin, path);
 
+    // tách tên file, đường dẫn, mở file input
+    init(path);
+
     setColor(1);
     clock_t start, end;
     start = clock();
@@ -172,6 +179,7 @@ void HuffmanCoding::handleRequest4 () {
         cout << "Không thể tạo file" << endl;
         return;
     }
+
     // giải mã file
     decode();
 
@@ -181,10 +189,44 @@ void HuffmanCoding::handleRequest4 () {
     cout << "Đã giải nén file thành công !" << endl;
     cout << "Thời gian giải nén: " << (double)1000 * (end - start) / CLOCKS_PER_SEC << "ms" << endl;
 
+    // đóng file
+    fin.close();
+    fout.close();
+
 }
 
 void HuffmanCoding::decode() {
+    // đọc file input và duyệt cây huffman, nếu là lá thì ghi vào file output
+    char ch;
+    int numBytesDecode = 0;
+    int numBytesRead = 0;
+    Tree *cur = root;
 
+    while (fin.get(ch)) {
+        numBytesRead++;
+        unsigned char c = ch;
+        for (int i = 7; i >= 0; i--) {
+            unsigned char code = (c >> i) & 1;  // lấy bit thứ i
+            if (cur->left == NULL && cur->right == NULL) {
+                if (cur->c == 26) { // EOF
+                    break;
+                }
+                char buffer = cur->c;
+                fout.put(buffer);
+                cur = root;
+                numBytesDecode++;
+            }
+
+            if (code == 0) {
+                cur = cur->left;
+            } else {
+                cur = cur->right;
+            }
+        }
+    }
+
+    cout << "Số byte trước khi giải nén: " << numBytesRead << endl;
+    cout << "Số byte sau khi giải nén: " << numBytesDecode << endl;
 }
 
 // --------------------------định nghĩa các hàm class---------------------------
@@ -197,14 +239,9 @@ HuffmanCoding::HuffmanCoding() {
 }
 
 HuffmanCoding::~HuffmanCoding() {
-    // đóng file input
-    fin.close();
-    fout.close();
-
     // giải phóng bộ nhớ
     delete root;
-    
-
+    delete forest;
 }
 
 // khởi tạo đường dẫn và tên file từ đường dẫn nhập vào, mở file input
