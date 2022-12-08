@@ -99,7 +99,6 @@ void HuffmanCoding :: encode () {
     fin.seekg(0);
 
     while (fin.get(ch)) {
-        // cout << "ki tu da doc: " << ch << endl;
         unsigned char c = ch;
         codeLen = encodeTable[c].code.size();
 
@@ -417,7 +416,3 @@ void HuffmanCoding::convertEncodeTable (Tree *root) {
 
     convertEncodeTable(root->right);
 }
-
-
-
-

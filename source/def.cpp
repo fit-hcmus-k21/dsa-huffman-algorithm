@@ -1,7 +1,5 @@
 #include "lib.h"
 
-
-
 // --------------------------Chức năng 1---------------------------
 
 // 1. Chức năng 1: nhập vào đường dẫn thư mục, in ra màn hình toàn bộ những thư mục con và tập tin trong thư mục đó.
